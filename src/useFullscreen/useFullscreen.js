@@ -1,13 +1,4 @@
-import { getElementError } from "@testing-library/react";
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import ReactDOM from "react-dom";
-
-const useFullscreen = (callback) => {
+export const useFullscreen = (callback) => {
   const element = useRef();
   const runCb = (isFull) => {
     if (callback && typeof callback === "function") {
@@ -44,25 +35,3 @@ const useFullscreen = (callback) => {
   };
   return { element, triggerFull, exitFull };
 };
-
-const App = () => {
-  const onFullS = (isFull) => {
-    console.log(isFull ? "We are full" : "We are small");
-  };
-  const { element, triggerFull, exitFull } =
-    useFullscreen(onFullS);
-  return (
-    <div className="App">
-      <div ref={element}>
-        <img
-          src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_960_720.jpg"
-          alt="tree"
-        />
-        <button onClick={exitFull}>Exit fullscreen</button>
-      </div>
-      <button onClick={triggerFull}>Make fullscreen</button>
-    </div>
-  );
-};
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);
