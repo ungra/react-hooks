@@ -7,60 +7,38 @@ import React, {
 } from "react";
 import ReactDOM from "react-dom";
 
-const useFullscreen = (callback) => {
-  const element = useRef();
-  const runCb = (isFull) => {
-    if (callback && typeof callback === "function") {
-      callback(isFull);
+const useNotification = (title, options) => {
+  if (!("Notification" in window)) {
+    return;
+  }
+  const fireNotification = () => {
+    if (Notification.permission !== "granted") {
+      console.log("1");
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          console.log("3");
+          new Notification(title, options);
+        } else {
+          console.log("4");
+          return;
+        }
+      });
+    } else {
+      console.log("2");
+      new Notification(title, options);
     }
   };
-  const triggerFull = () => {
-    if (element.current) {
-      if (element.current.requestFullscreen) {
-        element.current.requestFullscreen();
-      } else if (element.current.mozRequestFullScreen) {
-        element.current.mozRequestFullScreen();
-      } else if (element.current.webkitRequestFullscreen) {
-        element.current.webkitRequestFullscreen();
-      } else if (element.current.msRequestFullscreen) {
-        element.current.msRequestFullscreen();
-      }
-      runCb(true);
-    }
-  };
-  const exitFull = () => {
-    if (element.current) {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozRequestFullScreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
-    }
-    runCb(false);
-  };
-  return { element, triggerFull, exitFull };
+  return fireNotification;
 };
 
 const App = () => {
-  const onFullS = (isFull) => {
-    console.log(isFull ? "We are full" : "We are small");
-  };
-  const { element, triggerFull, exitFull } =
-    useFullscreen(onFullS);
+  const triggerNotification = useNotification(
+    "Can i steal your kimchi?",
+    { body: "I love kimchi don't you" }
+  );
   return (
     <div className="App">
-      <div ref={element}>
-        <img
-          src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_960_720.jpg"
-          alt="tree"
-        />
-        <button onClick={exitFull}>Exit fullscreen</button>
-      </div>
-      <button onClick={triggerFull}>Make fullscreen</button>
+      <button onClick={triggerNotification}>hello</button>
     </div>
   );
 };
