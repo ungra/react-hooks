@@ -6,39 +6,22 @@ import React, {
   useState,
 } from "react";
 import ReactDOM from "react-dom";
-
-const useNotification = (title, options) => {
-  if (!("Notification" in window)) {
-    return;
-  }
-  const fireNotification = () => {
-    if (Notification.permission !== "granted") {
-      console.log("1");
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          console.log("3");
-          new Notification(title, options);
-        } else {
-          console.log("4");
-          return;
-        }
-      });
-    } else {
-      console.log("2");
-      new Notification(title, options);
-    }
-  };
-  return fireNotification;
-};
+import useAxios from "./useAxios/useAxios";
 
 const App = () => {
-  const triggerNotification = useNotification(
-    "Can i steal your kimchi?",
-    { body: "I love kimchi don't you" }
+  const { loading, data, error, refetch } = useAxios({
+    url: "https://yts-proxy.now.sh/list_movies.json",
+  });
+  console.log(
+    `loading: ${loading}\n error: ${error}\n data: ${JSON.stringify(
+      data
+    )}\n`
   );
   return (
     <div className="App">
-      <button onClick={triggerNotification}>hello</button>
+      <h1>{data && data.status}</h1>
+      <h2>{loading && "Loading"}</h2>
+      <button onClick={refetch}>refetch</button>
     </div>
   );
 };
